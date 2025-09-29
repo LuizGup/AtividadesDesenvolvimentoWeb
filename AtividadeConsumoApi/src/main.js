@@ -1,4 +1,3 @@
-// --- Selecionando os elementos do HTML ---
 const pokemonInput = document.getElementById('pokemonInput');
 const searchButton = document.getElementById('searchButton');
 const pokemonList = document.getElementById('pokemonList');
