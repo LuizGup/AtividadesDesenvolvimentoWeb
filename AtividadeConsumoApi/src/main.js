@@ -1,24 +1,32 @@
-import './style.css'
-import javascriptLogo from './javascript.svg'
-import viteLogo from '/vite.svg'
-import { setupCounter } from './counter.js'
+// Função assíncrona para buscar os dados de um Pokémon
+async function getPokemonData(pokemonName) {
+  const url = `https://pokeapi.co/api/v2/pokemon/${pokemonName}`;
 
-document.querySelector('#app').innerHTML = `
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">
-      <img src="${javascriptLogo}" class="logo vanilla" alt="JavaScript logo" />
-    </a>
-    <h1>Hello Vite!</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite logo to learn more
-    </p>
-  </div>
-`
+  try {
+    const response = await fetch(url);
 
-setupCounter(document.querySelector('#counter'))
+    if (!response.ok) {
+      throw new Error(`Erro na requisição: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return data;
+
+  } catch (error) {
+    console.error("Não foi possível buscar os dados do Pokémon:", error);
+  }
+}
+
+const pokemonName = 'ditto';
+
+getPokemonData(pokemonName)
+  .then(pokemonData => {
+    if (pokemonData) {
+      console.log("✅ Dados completos do Pokémon:", pokemonData);
+
+      console.log(`Nome: ${pokemonData.name}`);
+      console.log(`ID: ${pokemonData.id}`);
+      console.log(`Primeira Habilidade: ${pokemonData.abilities[0].ability.name}`);
+    }
+  });
