@@ -1,4 +1,5 @@
-// --- Selecionando os elementos do HTML ---
+import { getPokemonData } from './api.js';
+
 const pokemonInput = document.getElementById('pokemonInput');
 const searchButton = document.getElementById('searchButton');
 const pokemonList = document.getElementById('pokemonList');
@@ -14,26 +15,14 @@ function savePokemons() {
 async function loadPokemons() {
   const savedPokemons = JSON.parse(localStorage.getItem('savedPokemons')) || [];
   for (const pokemonId of savedPokemons) {
-    const pokemonData = await getPokemonData(pokemonId);
-    if (pokemonData) {
-      createPokemonCard(pokemonData);
+    try {
+      const pokemonData = await getPokemonData(pokemonId);
+      if (pokemonData) {
+        createPokemonCard(pokemonData);
+      }
+    } catch (error) {
+      console.error(`Falha ao carregar o Pokémon com ID ${pokemonId}:`, error);
     }
-  }
-}
-
-async function getPokemonData(pokemonNameOrId) {
-  const formattedQuery = String(pokemonNameOrId).toLowerCase();
-  const url = `https://pokeapi.co/api/v2/pokemon/${formattedQuery}`;
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error("Pokémon não encontrado!");
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error(error);
-    alert(error.message);
   }
 }
 
@@ -72,13 +61,17 @@ searchButton.addEventListener('click', async () => {
     alert("Por favor, digite o nome ou ID de um Pokémon.");
     return;
   }
-
-  const pokemonData = await getPokemonData(pokemonName);
-
-  if (pokemonData) {
-    createPokemonCard(pokemonData);
-    savePokemons();
-    pokemonInput.value = "";
+  
+  try {
+    const pokemonData = await getPokemonData(pokemonName);
+    if (pokemonData) {
+      createPokemonCard(pokemonData);
+      savePokemons();
+      pokemonInput.value = "";
+    }
+  } catch (error) {
+    alert(error.message);
+    console.error(error);
   }
 });
 
